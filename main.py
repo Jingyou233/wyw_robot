@@ -17,7 +17,7 @@ if "user_input" not in st.session_state:
 
 # 显示初始消息（只显示一次）
 if st.session_state.show_initial:
-    initial_text = "你来小宝宝"
+    initial_text = "你来啦！小宝宝"
     placeholder = st.empty()
     for i in range(len(initial_text) + 1):
         placeholder.markdown(f"**{initial_text[:i]}**")
@@ -77,3 +77,4 @@ if not st.session_state.conversation_ended:
 else:
 
     st.info("对话已结束，刷新页面可以重新开始")
+
