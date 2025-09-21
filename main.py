@@ -1,80 +1,73 @@
 import streamlit as st
 import time
-from utils import ben_robot  # 假设这个函数能正常返回回复
+import asyncio
 
-# 页面标题
-st.title("欢迎来到笨笨世界")
+from utils import ben_robot, ben_robot_baidu  # 假设这个函数能正常返回回复
+from langchain.memory import ConversationBufferMemory
+
+
+# 打字机效果函数
+def typewriter_effect(text, speed=0.05):
+    # 创建一个空容器用于动态更新内容
+    container = st.empty()
+    typed_text = ""
+    for char in text:
+        typed_text += char
+        container.markdown(typed_text)  # 逐步更新显示内容
+        time.sleep(speed)  # 控制打字速度
+    return container
+
+
+st.title("🐖笨笨-1.1-Memory")
 
 # 初始化会话状态
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "show_initial" not in st.session_state:
-    st.session_state.show_initial = True
-if "conversation_ended" not in st.session_state:
-    st.session_state.conversation_ended = False
-if "user_input" not in st.session_state:
-    st.session_state.user_input = ""  # 用于存储用户输入的临时变量
+if "memory" not in st.session_state:
+    st.session_state["memory"] = ConversationBufferMemory(return_messages=True)
+    st.session_state["messages"] = [{
+        "role": "ai",
+        "content": "小宝宝，怎么啦？"}]
 
-# 显示初始消息（只显示一次）
-if st.session_state.show_initial:
-    initial_text = "你来啦！小宝宝"
-    placeholder = st.empty()
-    for i in range(len(initial_text) + 1):
-        placeholder.markdown(f"**{initial_text[:i]}**")
-        time.sleep(0.1)
-    st.session_state.messages.append({"role": "assistant", "content": initial_text})
-    st.session_state.show_initial = False
+# 初始化模式选择状态 - 使用字符串而不是数字
+if "mode" not in st.session_state:
+    st.session_state["mode"] = "聊天模式"  # 默认模式
 
-# 显示历史对话
-for message in st.session_state.messages:
-    if message["role"] == "assistant":
-        st.markdown(f"**笨笨猪：{message['content']}**")
-    else:
-        st.markdown(f"小宝宝：{message['content']}")
+with st.sidebar:
+    st.header("回答模式设置")
 
-# 如果对话未结束，显示输入框
-if not st.session_state.conversation_ended:
-    # 使用表单来更好地处理输入
-    with st.form(key="user_input_form", clear_on_submit=True):  # 添加 clear_on_submit=True
-        user_input = st.text_input(
-            "小宝宝：",
-            value=st.session_state.user_input,  # 使用 session_state 中的值
-            key="user_input_widget"  # 使用不同的 key
-        )
-        submit_button = st.form_submit_button("发送")
+    # 使用单选按钮替代普通按钮，确保只能选择一个模式
+    mode_option = st.radio(
+        "选择回答模式:",
+        ["聊天模式", "百科顿悟模式"],
+        index=0 if st.session_state["mode"] == "聊天模式" else 1
+    )
 
-    if submit_button:
-        # 清空输入框
-        st.session_state.user_input = ""
+    # 更新模式状态
+    st.session_state["mode"] = mode_option
 
-        # 添加用户消息到历史
-        st.session_state.messages.append({"role": "user", "content": user_input})
+    # 显示当前模式
+    st.write(f"**当前模式:** {st.session_state['mode']}")
 
-        # 检查是否结束对话
-        if "再见" in user_input:
-            st.session_state.conversation_ended = True
-            goodbye_text = "笨笨猪：再见小宝宝，下次再来玩哦！"
-            st.markdown(f"**{goodbye_text}**")
-            st.session_state.messages.append({"role": "assistant", "content": goodbye_text})
-            st.success("对话已结束，刷新页面可以重新开始")
+# 显示历史消息
+for message in st.session_state["messages"]:
+    st.chat_message(message["role"]).write(message["content"])
+
+# 处理用户输入
+prompt = st.chat_input("说吧")
+if prompt:
+    # 添加用户消息到会话历史并显示
+    st.session_state["messages"].append({"role": "user", "content": prompt})
+    st.chat_message("user").write(prompt)
+
+    # 获取AI回复
+    with st.spinner("emmmmmm"):
+        if st.session_state["mode"] == "聊天模式":
+            response = ben_robot(prompt, st.session_state["memory"])
         else:
-            # 显示加载状态并获取回复
-            with st.spinner("猪脑发烧中"):
-                resp = ben_robot(user_input)
+            response = ben_robot_baidu(prompt, st.session_state["memory"])
 
-            # 用打字效果显示回复
-            placeholder = st.empty()
-            display_text = f"笨笨猪：{resp}"
-            for i in range(len(display_text) + 1):
-                placeholder.markdown(f"**{display_text[:i]}**")
-                time.sleep(0.1)
+    # 添加AI回复到会话历史
+    st.session_state["messages"].append({"role": "ai", "content": response})
 
-            # 添加机器人回复到历史
-            st.session_state.messages.append({"role": "assistant", "content": resp})
-
-            # 使用rerun刷新界面
-            st.rerun()
-else:
-
-    st.info("对话已结束，刷新页面可以重新开始")
-
+    # 用打字机效果显示AI回复
+    with st.chat_message("ai"):
+        typewriter_effect(response, speed=0.03)  # 可调整speed控制打字速度（秒/字符）
