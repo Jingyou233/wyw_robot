@@ -18,8 +18,8 @@ def typewriter_effect(text, speed=0.05):
     return container
 
 
-st.title("🐖笨笨-1.1-Memory")
-
+st.title("🐖笨笨-1.2-Memory")
+st.info("1.2版本更新，解决了回答空信息的问题")
 # 初始化会话状态
 if "memory" not in st.session_state:
     st.session_state["memory"] = ConversationBufferMemory(return_messages=True)
@@ -57,13 +57,27 @@ if prompt:
     # 添加用户消息到会话历史并显示
     st.session_state["messages"].append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
-
+    num = 2
     # 获取AI回复
     with st.spinner("emmmmmm"):
         if st.session_state["mode"] == "聊天模式":
             response = ben_robot(prompt, st.session_state["memory"])
+            print(response)
+
+            while response == "":
+                response = ben_robot(prompt, st.session_state["memory"])
+                num+=1
+                print(num)
         else:
             response = ben_robot_baidu(prompt, st.session_state["memory"])
+            print(response)
+            while response == "":
+                response = ben_robot_baidu(prompt, st.session_state["memory"])
+
+                num += 1
+                print(num)
+
+
 
     # 添加AI回复到会话历史
     st.session_state["messages"].append({"role": "ai", "content": response})
