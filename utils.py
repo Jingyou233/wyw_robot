@@ -5,7 +5,8 @@ from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from baidu_baike import BaiDuBaiKe
 
-def ben_robot(content,memory):
+
+def ben_robot(content, memory):
     prompt_wyw = ChatPromptTemplate.from_messages(
         [
             ("system",
@@ -19,7 +20,7 @@ def ben_robot(content,memory):
         api_key="sk-oO4rncrorPMb4oCHIYRRYH0KLCb9fk3wFtGACVumCO50LK63",
         base_url="https://api.aigc369.com/v1")
 
-    chain_wyw=ConversationChain(llm=model,memory=memory,prompt=prompt_wyw)
+    chain_wyw = ConversationChain(llm=model, memory=memory, prompt=prompt_wyw)
 
     answer = chain_wyw.invoke({"input": content})
 
@@ -27,7 +28,7 @@ def ben_robot(content,memory):
 
 
 def ben_robot_baidu(content, memory):
-    keyword = '是谁'
+    keyword = '是'
     # 检查句子中是否包含关键词
     if keyword in content:
         # 找到关键词的起始索引
@@ -48,26 +49,24 @@ def ben_robot_baidu(content, memory):
             ("user", "{input}")
         ]
     )
-    model_second = ChatOpenAI(
+    model_second_3 = ChatOpenAI(
         model="gpt-3.5-turbo",
         api_key="sk-oO4rncrorPMb4oCHIYRRYH0KLCb9fk3wFtGACVumCO50LK63",
         base_url="https://api.aigc369.com/v1")
+    # model_second_4 = ChatOpenAI(
+    #     model="gpt-4-all",
+    #     api_key="sk-oO4rncrorPMb4oCHIYRRYH0KLCb9fk3wFtGACVumCO50LK63",
+    #     base_url="https://api.aigc369.com/v1")
 
-
-
-
-    chain_baidu = ConversationChain(llm=model_second, memory=memory, prompt=prompt_baidu)
-
-
-
-
-
-
+    chain_baidu = ConversationChain(llm=model_second_3, memory=memory, prompt=prompt_baidu)
+    # chain_baidu_4 = ConversationChain(llm=model_second_4, memory=memory, prompt=prompt_baidu)
     answer = chain_baidu.invoke({"input": content})
 
 
     return answer["response"]
+
+
 if __name__ == '__main__':
-    memory=ConversationBufferMemory(return_messages=True)
-    print(ben_robot_baidu("单依纯",memory))
-    print(ben_robot_baidu("我刚刚说什么",memory))
+    memory = ConversationBufferMemory(return_messages=True)
+    print(ben_robot_baidu("单依纯", memory))
+    print(ben_robot_baidu("我刚刚说什么", memory))
