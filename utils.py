@@ -16,9 +16,9 @@ def ben_robot(content, memory):
         ]
     )
     model = ChatOpenAI(
-        model="gpt-3.5-turbo",
-        api_key="sk-oO4rncrorPMb4oCHIYRRYH0KLCb9fk3wFtGACVumCO50LK63",
-        base_url="https://api.aigc369.com/v1")
+        model="deepseek-chat",
+        api_key="sk-e1194476073b4c1094ef5b9dce285284",
+        base_url="https://api.deepseek.com")
 
     chain_wyw = ConversationChain(llm=model, memory=memory, prompt=prompt_wyw)
 
@@ -50,9 +50,9 @@ def ben_robot_baidu(content, memory):
         ]
     )
     model_second_3 = ChatOpenAI(
-        model="gpt-3.5-turbo",
-        api_key="sk-oO4rncrorPMb4oCHIYRRYH0KLCb9fk3wFtGACVumCO50LK63",
-        base_url="https://api.aigc369.com/v1")
+        model="deepseek-chat",
+        api_key="sk-e1194476073b4c1094ef5b9dce285284",
+        base_url="https://api.deepseek.com")
     # model_second_4 = ChatOpenAI(
     #     model="gpt-4-all",
     #     api_key="sk-oO4rncrorPMb4oCHIYRRYH0KLCb9fk3wFtGACVumCO50LK63",
@@ -68,5 +68,5 @@ def ben_robot_baidu(content, memory):
 
 if __name__ == '__main__':
     memory = ConversationBufferMemory(return_messages=True)
-    print(ben_robot_baidu("单依纯", memory))
-    print(ben_robot_baidu("我刚刚说什么", memory))
+    print(ben_robot("单依纯", memory))
+    print(ben_robot("我刚刚说什么", memory))
