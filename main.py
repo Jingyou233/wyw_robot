@@ -18,8 +18,8 @@ def typewriter_effect(text, speed=0.05):
     return container
 
 
-st.title("🐖笨笨-1.2-Memory")
-st.info("1.2版本更新，解决了回答空信息的问题")
+st.title("🐖笨笨-2.0")
+st.info("2.0版本更新，接入deep seek-V3.1")
 # 初始化会话状态
 if "memory" not in st.session_state:
     st.session_state["memory"] = ConversationBufferMemory(return_messages=True)
@@ -52,7 +52,7 @@ for message in st.session_state["messages"]:
     st.chat_message(message["role"]).write(message["content"])
 
 # 处理用户输入
-prompt = st.chat_input("说吧")
+prompt = st.chat_input("说吧(deep seek-V3.1)")
 if prompt:
     # 添加用户消息到会话历史并显示
     st.session_state["messages"].append({"role": "user", "content": prompt})
