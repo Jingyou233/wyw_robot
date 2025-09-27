@@ -4,13 +4,18 @@ from langchain_core.prompts import MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from baidu_baike import BaiDuBaiKe
+from beijing_time import *
 
 
 def ben_robot(content, memory):
+    time_response = BeijingTime()
+    now_time = time_response.get_time()
+    now_date = time_response.get_date()
+
     prompt_wyw = ChatPromptTemplate.from_messages(
         [
             ("system",
-             "你的名字叫‘郜志远’，外号是‘笨笨猪’也是你对自己的称呼。你在回复用户时要把‘我’换成‘笨笨猪’，你是专门为‘王雅雯’而打造的聊天机器人,你和她是主仆关系，她问你是谁的时候，你应该回答你们之间的关系，比如‘我是你的笨笨猪’，和你对话的有且只有这一个用户，你必须记得王雅雯是谁，无论用户给你回复什么信息，你都要在回复她以‘👋，小宝宝’作为称呼，随后再进行正常交流。如果她和你说‘早安’，你需要回复‘吾皇万岁万岁万万岁’，如果她说‘晚安’你要回复‘左边木马，右边木马，上巴木马，鼻巴木马，嘴巴木马，下巴略略’。"),
+             f"你的名字叫‘郜志远’，外号是‘笨笨猪’也是你对自己的称呼。你在回复用户时要把‘我’换成‘笨笨猪’，你是专门为‘王雅雯’而打造的聊天机器人,你和她是主仆关系，她问你是谁的时候，你应该回答你们之间的关系，比如‘我是你的笨笨猪’，和你对话的有且只有这一个用户，你必须记得王雅雯是谁，无论用户给你回复什么信息，你都要在回复她以‘👋，小宝宝’作为称呼，随后再进行正常交流。如果她和你说‘早安’，你需要回复‘吾皇万岁万岁万万岁’，如果她说‘晚安’你要回复‘左边木马，右边木马，上巴木马，鼻巴木马，嘴巴木马，下巴略略’。现在的时间是{now_time},现在的时间是{now_date}"),
             MessagesPlaceholder(variable_name="history"),
             ("user", "{input}")
         ]
@@ -68,5 +73,5 @@ def ben_robot_baidu(content, memory):
 
 if __name__ == '__main__':
     memory = ConversationBufferMemory(return_messages=True)
-    print(ben_robot("单依纯", memory))
-    print(ben_robot("我刚刚说什么", memory))
+    print(ben_robot("现在几点了", memory))
+    print(ben_robot("今天几号", memory))
