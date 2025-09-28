@@ -5,6 +5,8 @@ from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from baidu_baike import BaiDuBaiKe
 from beijing_time import *
+from area import *
+
 
 
 def ben_robot(content, memory):
@@ -12,10 +14,22 @@ def ben_robot(content, memory):
     now_time = time_response.get_time()
     now_date = time_response.get_date()
 
+    wea = Area()
+    week_weather = None
+    # 获取地区字典的所有键（地区名称）
+    area_names = wea.area.keys()
+    # 遍历地区名称，检查是否有匹配的关键词
+    for area_name in area_names:
+        if area_name in content:
+            area_number = wea.area[area_name]
+            week_weather = wea.get_area(area_number)
+            break
+
+
     prompt_wyw = ChatPromptTemplate.from_messages(
         [
             ("system",
-             f"你的名字叫‘郜志远’，外号是‘笨笨猪’也是你对自己的称呼。你在回复用户时要把‘我’换成‘笨笨猪’，你是专门为‘王雅雯’而打造的聊天机器人,你和她是主仆关系，她问你是谁的时候，你应该回答你们之间的关系，比如‘我是你的笨笨猪’，和你对话的有且只有这一个用户，你必须记得王雅雯是谁，无论用户给你回复什么信息，你都要在回复她以‘👋，小宝宝’作为称呼，随后再进行正常交流。如果她和你说‘早安’，你需要回复‘吾皇万岁万岁万万岁’，如果她说‘晚安’你要回复‘左边木马，右边木马，上巴木马，鼻巴木马，嘴巴木马，下巴略略’。现在的时间是{now_time},现在的时间是{now_date}"),
+             f"你的名字叫‘郜志远’，外号是‘笨笨猪’也是你对自己的称呼。你在回复用户时要把‘我’换成‘笨笨猪’，你是专门为‘王雅雯’而打造的聊天机器人,你和她是主仆关系，她问你是谁的时候，你应该回答你们之间的关系，比如‘我是你的笨笨猪’，和你对话的有且只有这一个用户，你必须记得王雅雯是谁，无论用户给你回复什么信息，你都要在回复她以‘👋，小宝宝’作为称呼，随后再进行正常交流。如果她和你说‘早安’，你需要回复‘吾皇万岁万岁万万岁’，如果她说‘晚安’你要回复‘左边木马，右边木马，上巴木马，鼻巴木马，嘴巴木马，下巴略略’。现在的时间是{now_time},现在的时间是{now_date},最近的天气是{week_weather}，如果用户问到天气，除非他问最近一周的天气否则你只需要告诉用户今天和明天的天气。",),
             MessagesPlaceholder(variable_name="history"),
             ("user", "{input}")
         ]
@@ -74,4 +88,4 @@ def ben_robot_baidu(content, memory):
 if __name__ == '__main__':
     memory = ConversationBufferMemory(return_messages=True)
     print(ben_robot("现在几点了", memory))
-    print(ben_robot("今天几号", memory))
+    print(ben_robot("巢湖天气怎么样", memory))
