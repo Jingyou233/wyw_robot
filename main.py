@@ -19,7 +19,7 @@ def typewriter_effect(text, speed=0.05):
 
 
 st.title("🐖笨笨-2.0")
-st.info("2.0版本更新，接入deep seek-V3.1")
+st.info("2.1版本更新，增加了天气及世家查询模块")
 # 初始化会话状态
 if "memory" not in st.session_state:
     st.session_state["memory"] = ConversationBufferMemory(return_messages=True)
@@ -85,3 +85,4 @@ if prompt:
     # 用打字机效果显示AI回复
     with st.chat_message("ai"):
         typewriter_effect(response, speed=0.03)  # 可调整speed控制打字速度（秒/字符）
+
